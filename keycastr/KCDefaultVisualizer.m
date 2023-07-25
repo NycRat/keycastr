@@ -116,6 +116,12 @@ static const CGFloat kKCDefaultBezelPadding = 10.0;
 	[visualizerWindow addMouseEvent:mouseEvent];
 }
 
+-(void)setIsVisible:(BOOL)visible
+{
+    printf("HUH\n");
+    [visualizerWindow setIsVisible:visible];
+}
+
 @end
 
 static NSRect KC_defaultFrame() {
@@ -231,10 +237,12 @@ static NSRect KC_defaultFrame() {
     NSLog(@"================> %@", NSStringFromSelector(_cmd));
 }
 
+
 - (void)addKeystroke:(KCKeystroke *)keystroke
 {
 	[self _cancelLineBreak];
 	NSString* charString = [keystroke convertToString];
+    
 
     if ([keystroke isCommand])
 	{
@@ -255,6 +263,7 @@ static NSRect KC_defaultFrame() {
 		[_currentBezelView setAutoresizingMask:NSViewMinYMargin];
 
         NSRect frame = self.frame;
+        // frame.size.height += 10 + _currentBezelView.frame.size.height;
         frame.size.height += 10 + _currentBezelView.frame.size.height;
 		[self setFrame:frame display:YES animate:NO];
 
@@ -309,6 +318,10 @@ static NSRect KC_defaultFrame() {
 		NSAnimation* anim = [_runningAnimations objectAtIndex:i];
 		[anim startAnimation];
 	}
+}
+
+-(void) setIsVisible:(BOOL)visible
+{
 }
 
 - (void)mouseDown:(NSEvent*)theEvent

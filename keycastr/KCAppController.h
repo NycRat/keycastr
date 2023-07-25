@@ -35,9 +35,11 @@
 -(IBAction) orderFrontKeyCastrAboutPanel:(id)sender;
 -(IBAction) orderFrontKeyCastrPreferencesPanel:(id)sender;
 -(IBAction) toggleRecording:(id)sender;
+-(IBAction) toggleVisible:(id)sender;
 -(IBAction) pretendToDoSomethingImportant:(id)sender;
 -(IBAction) changeIconPreference:(id)sender;
 
+-(BOOL) isVisible;
 -(BOOL) isCapturing;
 -(void) setIsCapturing:(BOOL)capture;
 -(void) registerVisualizers;

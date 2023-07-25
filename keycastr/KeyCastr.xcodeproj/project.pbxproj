@@ -747,7 +747,7 @@
 						ProvisioningStyle = Automatic;
 					};
 					8D1107260486CEB800E47090 = {
-						DevelopmentTeam = 68TUCLNAPS;
+						DevelopmentTeam = 8ZQMGM5R9D;
 						ProvisioningStyle = Automatic;
 					};
 					AFC172182377CFF500292155 = {
@@ -1254,7 +1254,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = "$(MARKETING_VERSION)";
-				DEVELOPMENT_TEAM = 68TUCLNAPS;
+				DEVELOPMENT_TEAM = 8ZQMGM5R9D;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1576,7 +1576,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = "$(MARKETING_VERSION)";
-				DEVELOPMENT_TEAM = 68TUCLNAPS;
+				DEVELOPMENT_TEAM = 8ZQMGM5R9D;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",

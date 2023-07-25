@@ -72,6 +72,7 @@ static NSInteger kKCPrefDisplayIconInDock = 0x02;
     KCMouseEventVisualizer *mouseEventVisualizer;
 
     BOOL _isCapturing;
+    BOOL _isVisible;
 }
 
 @synthesize statusMenu, aboutWindow, preferencesWindow, prefsWindowController, shortcutRecorder, dockShortcutItem, statusShortcutItem;
@@ -116,7 +117,9 @@ static NSInteger kKCPrefDisplayIconInDock = 0x02;
     KeyCombo toggleShortcutKey;
     toggleShortcutKey.code = -1;
     toggleShortcutKey.flags = 0;
-
+    
+    // TOGGLETHING
+    
     NSData *toggleShortcutKeyData = [[NSUserDefaults standardUserDefaults] dataForKey:kKCPrefCapturingHotKey];
     if (toggleShortcutKeyData != nil) {
         [toggleShortcutKeyData getBytes:&toggleShortcutKey length:sizeof(toggleShortcutKey)];
@@ -256,6 +259,7 @@ static NSInteger kKCPrefDisplayIconInDock = 0x02;
     if ([keystroke keyCode] == self.toggleKeyCombo.code && ([keystroke modifierFlags] & (NSEventModifierFlagControl | NSEventModifierFlagCommand | NSEventModifierFlagShift | NSEventModifierFlagOption)) == (self.toggleKeyCombo.flags & (NSEventModifierFlagControl | NSEventModifierFlagCommand | NSEventModifierFlagShift | NSEventModifierFlagOption)))
 	{
         [self toggleRecording:self];
+        [self toggleVisible:self];
 		return;
 	}
 	
@@ -417,6 +421,11 @@ static NSInteger kKCPrefDisplayIconInDock = 0x02;
 	[self setIsCapturing:![self isCapturing]];
 }
 
+-(void) toggleVisible:(id)sender
+{
+    [self setIsVisible:![self isVisible]];
+}
+
 -(void) stopPretending:(id)what
 {
 	[self toggleRecording:self];
@@ -481,6 +490,32 @@ static NSInteger kKCPrefDisplayIconInDock = 0x02;
 -(BOOL) isCapturing
 {
 	return _isCapturing;
+}
+
+-(BOOL) isVisible
+{
+    return _isVisible;
+}
+
+-(void) setIsVisible:(BOOL)visible
+{
+    if (visible && !keyboardTap.tapInstalled) {
+        return;
+    }
+    if (currentVisualizer != nil) {
+        [currentVisualizer setIsVisible:visible];
+    }
+
+    _isVisible = visible;
+    /*[statusShortcutItem setTitle:(_isCapturing
+        ? @"Stop Casting"
+        : @"Start Casting")];
+    [dockShortcutItem setTitle:(_isCapturing
+        ? @"Stop Casting"
+        : @"Start Casting")];
+    [NSApp setApplicationIconImage:(_isCapturing
+        ? [NSImage imageNamed:@"KeyCastr"]
+        : [NSImage imageNamed:@"KeyCastrInactive"])];*/
 }
 
 -(void) setIsCapturing:(BOOL)capture

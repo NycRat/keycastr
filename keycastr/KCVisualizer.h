@@ -38,6 +38,8 @@
 -(void) hideVisualizer:(id)sender;
 -(void) deactivateVisualizer:(id)sender;
 
+- (void)setIsVisible:(BOOL)visible;
+
 - (void)noteKeyEvent:(KCKeystroke *)keystroke;
 - (void)noteFlagsChanged:(NSEventModifierFlags)flags;
 - (void)noteMouseEvent:(KCMouseEvent *)mouseEvent;

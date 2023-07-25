@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="19529" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="21507" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="19529"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21507"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -227,7 +226,7 @@
                     </textFieldCell>
                 </textField>
                 <colorWell translatesAutoresizingMaskIntoConstraints="NO" id="8">
-                    <rect key="frame" x="163" y="50" width="44" height="22"/>
+                    <rect key="frame" x="160" y="48" width="50" height="26"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="44" id="FkX-jX-V4s"/>
                         <constraint firstAttribute="height" constant="22" id="InA-Ja-vdL"/>
@@ -253,7 +252,7 @@
                     </textFieldCell>
                 </textField>
                 <colorWell translatesAutoresizingMaskIntoConstraints="NO" id="13">
-                    <rect key="frame" x="163" y="20" width="44" height="22"/>
+                    <rect key="frame" x="160" y="18" width="50" height="26"/>
                     <color key="color" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <connections>
                         <binding destination="9" name="value" keyPath="values.default.textColor" id="70">

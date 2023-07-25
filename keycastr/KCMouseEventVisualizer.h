@@ -57,5 +57,6 @@
 @property (nonatomic, weak) id<KCMouseEventVisualizerDelegate> delegate;
 
 - (void)noteMouseEvent:(KCMouseEvent *)mouseEvent;
+- (void)setIsVisible:(BOOL)visible;
 
 @end

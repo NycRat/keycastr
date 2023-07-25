@@ -50,10 +50,15 @@
 @implementation SvelteVisualizerView {
     NSEventModifierFlags _flags;
 	NSString *_displayedString;
+    BOOL _isVisible;
 }
 
 -(void) drawRect:(NSRect)rect
 {
+    if (_isVisible) { // IDK WHY CANT INITIALIZE WITH YES IDK
+        return;
+    }
+
 	NSRect frame = [self frame];
 	[[NSColor clearColor] setFill];
 	NSRectFill(frame);
@@ -62,7 +67,7 @@
 
 	[[NSColor colorWithCalibratedWhite:0 alpha:0.85] setFill];
 	NSBezierPath* bp = [NSBezierPath bezierPath];
-	[bp appendRoundedRect:frame radius:16];
+	[bp appendRoundedRect:frame radius:10];
 	[bp appendBezierPathWithRect:NSMakeRect(0,30,frame.size.width,1)];
 	[bp appendBezierPathWithRect:NSMakeRect(oneQuarter*1,0,1,30)];
 	[bp appendBezierPathWithRect:NSMakeRect(oneQuarter*2,0,1,30)];
@@ -77,9 +82,10 @@
 	NSString* altKeyString = [NSString stringWithUTF8String:"\xe2\x8c\xa5\x01"];
 	NSString* commandKeyString = [NSString stringWithUTF8String:"\xe2\x8c\x98\x01"];
 	NSShadow* shadow = [[[NSShadow alloc] init] autorelease];
-	[shadow setShadowColor:[NSColor blackColor]];
-	[shadow setShadowBlurRadius:2];
-	[shadow setShadowOffset:NSMakeSize(2,-2)];
+	[shadow setShadowColor:[NSColor whiteColor]];
+	[shadow setShadowBlurRadius:15];
+    //[shadow setShadowBlurRadius:2];
+	//[shadow setShadowOffset:NSMakeSize(2,-2)];
 
 	NSSize size;
 	NSMutableDictionary* attr = [NSMutableDictionary dictionaryWithObjectsAndKeys:
@@ -120,18 +126,24 @@
 	if (_displayedString != nil)
 	{
 		[attr setObject:[NSColor whiteColor] forKey:NSForegroundColorAttributeName];
-		float fontSize = 48;
+		float fontSize = 40;
 		[attr setObject:[NSFont systemFontOfSize:fontSize] forKey:NSFontAttributeName];
 		
 		size = [_displayedString sizeWithAttributes:attr];
-		while (size.width > frame.size.width - 10)
+		/*while (size.width > frame.size.width - 10)
 		{
 			fontSize -= 1.0;
 			[attr setObject:[NSFont systemFontOfSize:fontSize] forKey:NSFontAttributeName];
 			size = [_displayedString sizeWithAttributes:attr];
-		}
+		}*/
 		[_displayedString drawInRect:NSMakeRect(0,30+(frame.size.height-30 - size.height)/2.0,frame.size.width,size.height) withAttributes:attr];
 	}
+}
+
+-(void) setIsVisible:(BOOL)visible
+{
+    printf("TOGGLE\n");
+    _isVisible = visible;
 }
 
 -(void) noteKeyEvent:(KCKeystroke*)keystroke
@@ -140,12 +152,31 @@
         [_displayedString autorelease];
         _displayedString = [[_displayedString stringByAppendingString:[keystroke convertToString]] retain];
 
-
-        if (_displayedString.length > 6) {
-            NSRange range = NSMakeRange(_displayedString.length - 6, 6);
+        NSMutableDictionary* attr = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+            [NSFont boldSystemFontOfSize:16], NSFontAttributeName,
+            [NSColor whiteColor], NSForegroundColorAttributeName,
+            nil];
+        
+        float fontSize = 40;
+        [attr setObject:[NSFont systemFontOfSize:fontSize] forKey:NSFontAttributeName];
+        
+        NSSize size = [_displayedString sizeWithAttributes:attr];
+        
+        //printf("%f\n", size.width);
+        // IDK MIGHT BE IMPORTANT LATER
+        
+        while (size.width > self.frame.size.width - 10) {
+            NSRange range = NSMakeRange(1, _displayedString.length-1);
             [_displayedString autorelease];
             _displayedString = [[_displayedString substringWithRange:range] retain];
+            size = [_displayedString sizeWithAttributes:attr];
         }
+
+        /*if (_displayedString.length > len) {
+            NSRange range = NSMakeRange(_displayedString.length - len, len);
+            [_displayedString autorelease];
+            _displayedString = [[_displayedString substringWithRange:range] retain];
+        }*/
     }
     else {
         _displayedString = [[keystroke convertToString] retain];
@@ -155,8 +186,8 @@
 
 -(void) noteFlagsChanged:(NSEventModifierFlags)flags
 {
-    [_displayedString autorelease];
-    _displayedString = nil;
+    //[_displayedString autorelease];
+    //_displayedString = nil;
     _flags = flags;
 	[self setNeedsDisplay:YES];
 }
@@ -180,11 +211,12 @@
     if (!(self = [super init]))
         return nil;
     
-    NSRect r = { 10, 10, 200, 100 };
+    NSRect r = { 10, 10, 450, 90 };
     _visualizerWindow = [[NSWindow alloc] initWithContentRect:r
                                                     styleMask:NSWindowStyleMaskBorderless
                                                       backing:NSBackingStoreBuffered
                                                         defer:NO];
+    
     [_visualizerWindow setLevel:NSScreenSaverWindowLevel];
     [_visualizerWindow setBackgroundColor:[NSColor clearColor]];
     [_visualizerWindow setMovableByWindowBackground:YES];
@@ -242,5 +274,11 @@
 {
 	[_visualizerView noteFlagsChanged:flags];
 }
+
+-(void) setIsVisible:(BOOL)visible
+{
+    [_visualizerView setIsVisible:visible];
+}
+
 
 @end

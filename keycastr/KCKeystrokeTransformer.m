@@ -107,8 +107,10 @@ static NSString* kLeftTabString = @"\xe2\x87\xa4";
              UTF8("\xe2\x87\xa3"), @125, // down
              UTF8("\xe2\x87\xa2"), @124, // right
              UTF8("\xe2\x87\xa0"), @123, // left
-             UTF8("\xe2\x87\xa5"), @48,  // tab
-             UTF8("\xe2\x8e\x8b"), @53,  // escape
+             //UTF8("\xe2\x87\xa5"), @48,  // tab
+             @"<tab>", @48,  // tab
+             //UTF8("\xe2\x8e\x8b"), @53,  // escape
+             @"<esc>", @53,  // escape
              UTF8("\xe2\x8c\xa7"), @71,  // clear
              UTF8("\xe2\x8c\xab"), @51,  // delete
              UTF8("\xe2\x8c\xa6"), @117, // forward delete
@@ -155,6 +157,47 @@ static NSString* kLeftTabString = @"\xe2\x87\xa4";
     return d;
 }
 
+NSString *shiftedCharacterForKey(NSString *inputString) {
+    if ([inputString length] == 0) {
+        return inputString;
+    }
+
+    static NSDictionary *d = nil;
+    if (d == nil) {
+        d = [[NSDictionary alloc] initWithObjectsAndKeys:
+            @"~", @"`",
+            @"_", @"-",
+            @"+", @"=",
+            @"?", @"/",
+            @":", @";",
+            @"<", @",",
+            @">", @".",
+            @"\"", @"'",
+            @"{", @"[",
+            @"}", @"]",
+            @"|", @"\\",
+            @"!", @"1",
+            @"@", @"2",
+            @"#", @"3",
+            @"$", @"4",
+            @"%", @"5",
+            @"^", @"6",
+            @"&", @"7",
+            @"*", @"8",
+            @"(", @"9",
+            @")", @"0", 
+            nil];
+    }
+
+    unichar thing = [inputString characterAtIndex:0];
+    NSString* firstCharacter = [NSString stringWithCharacters:&thing length:1];
+    NSString* shiftedValue = d[firstCharacter];
+    if (shiftedValue) {
+        return shiftedValue;
+    }
+    return [inputString uppercaseString];
+}
+
 - (id)transformedValue:(id)value
 {
 	KCKeystroke *keystroke = (KCKeystroke *)value;
@@ -164,53 +207,43 @@ static NSString* kLeftTabString = @"\xe2\x87\xa4";
     NSEventModifierFlags _modifiers = keystroke.modifierFlags;
     BOOL isOption = (_modifiers & NSEventModifierFlagOption) != 0;
     BOOL isCommand = keystroke.isCommand;
-
+    BOOL isControl = NO;
     BOOL isShifted = NO;
-    BOOL needsShiftGlyph = NO;
-
-    if (_modifiers & NSEventModifierFlagControl)
-	{
-		[mutableResponse appendString:kControlKeyString];
-	}
+    
+    if (_modifiers & NSEventModifierFlagShift)
+    {
+        isShifted = YES;
+    }
 
 	if (isOption)
 	{
 		[mutableResponse appendString:kAltKeyString];
 	}
 
-    if (_modifiers & NSEventModifierFlagShift)
-	{
-		isShifted = YES;
-		if (isOption || isCommand)
-			[mutableResponse appendString:kShiftKeyString];
-		else
-			needsShiftGlyph = YES;
-	}
-
     if (_modifiers & NSEventModifierFlagCommand)
 	{
-		if (needsShiftGlyph)
-		{
-			[mutableResponse appendString:kShiftKeyString];
-			needsShiftGlyph = NO;
-		}
 		[mutableResponse appendString:kCommandKeyString];
 	}
 
+    if (_modifiers & NSEventModifierFlagControl)
+    {
+        //[mutableResponse appendString:kControlKeyString];
+        // "<C-c>
+        [mutableResponse appendString:@"<C-"];
+        isControl = YES;
+    }
+    
     // check for bare shift-tab as left tab special case
     if (isShifted && !isCommand && !isOption)
     {
         if ([@(_keyCode) isEqualToNumber:@48]) {
-            [mutableResponse appendString:kLeftTabString];
+            [mutableResponse appendString:kShiftKeyString];
+            //[mutableResponse appendString:kLeftTabString];
+            [mutableResponse appendString:@"<tab>"];
             return mutableResponse;
         }
     }
 
-    if (needsShiftGlyph) {
-        [mutableResponse appendString:kShiftKeyString];
-        needsShiftGlyph = NO;
-    }
-    
 	NSString *specialKeyString = [[self _specialKeys] objectForKey:@(_keyCode)];
 	if (specialKeyString)
 	{
@@ -218,12 +251,18 @@ static NSString* kLeftTabString = @"\xe2\x87\xa4";
         return mutableResponse;
 	}
 
-    [mutableResponse appendString:[self translatedCharacterForKeystroke:keystroke]];
-
-    if (isCommand || isShifted)
+    if (isShifted)
 	{
-        mutableResponse = [[[mutableResponse uppercaseString] mutableCopy] autorelease];
-	}
+        //mutableResponse = [[[shiftedCharacterForKey(mutableResponse) uppercaseString] mutableCopy] autorelease];
+        //[mutableResponse appendString:shiftedCharacterForKey([self translatedCharacterForKeystroke:keystroke])];
+        [mutableResponse appendString:shiftedCharacterForKey([self translatedCharacterForKeystroke:keystroke])];
+    } else {
+        [mutableResponse appendString:[self translatedCharacterForKeystroke:keystroke]];
+    }
+    if (isControl) {
+        [mutableResponse appendString:@">"];
+    }
+    
 	
 	return mutableResponse;
 }
