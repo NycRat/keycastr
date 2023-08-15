@@ -143,6 +143,7 @@
 -(void) setIsVisible:(BOOL)visible
 {
     printf("TOGGLE\n");
+    _displayedString = @"";
     _isVisible = visible;
 }
 

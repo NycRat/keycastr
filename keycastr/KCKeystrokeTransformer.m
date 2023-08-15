@@ -225,6 +225,12 @@ NSString *shiftedCharacterForKey(NSString *inputString) {
 		[mutableResponse appendString:kCommandKeyString];
 	}
 
+    // check for bare shift-tab as left tab special case
+    if (isShifted && [@(_keyCode) isEqualToNumber:@48])
+    {
+        [mutableResponse appendString:kShiftKeyString];
+    }
+    
     if (_modifiers & NSEventModifierFlagControl)
     {
         //[mutableResponse appendString:kControlKeyString];
@@ -233,32 +239,22 @@ NSString *shiftedCharacterForKey(NSString *inputString) {
         isControl = YES;
     }
     
-    // check for bare shift-tab as left tab special case
-    if (isShifted && !isCommand && !isOption)
-    {
-        if ([@(_keyCode) isEqualToNumber:@48]) {
-            [mutableResponse appendString:kShiftKeyString];
-            //[mutableResponse appendString:kLeftTabString];
-            [mutableResponse appendString:@"<tab>"];
-            return mutableResponse;
-        }
-    }
 
 	NSString *specialKeyString = [[self _specialKeys] objectForKey:@(_keyCode)];
 	if (specialKeyString)
 	{
 		[mutableResponse appendString:specialKeyString];
-        return mutableResponse;
-	}
-
-    if (isShifted)
-	{
-        //mutableResponse = [[[shiftedCharacterForKey(mutableResponse) uppercaseString] mutableCopy] autorelease];
-        //[mutableResponse appendString:shiftedCharacterForKey([self translatedCharacterForKeystroke:keystroke])];
-        [mutableResponse appendString:shiftedCharacterForKey([self translatedCharacterForKeystroke:keystroke])];
     } else {
-        [mutableResponse appendString:[self translatedCharacterForKeystroke:keystroke]];
+        if (isShifted)
+        {
+            //mutableResponse = [[[shiftedCharacterForKey(mutableResponse) uppercaseString] mutableCopy] autorelease];
+            //[mutableResponse appendString:shiftedCharacterForKey([self translatedCharacterForKeystroke:keystroke])];
+            [mutableResponse appendString:shiftedCharacterForKey([self translatedCharacterForKeystroke:keystroke])];
+        } else {
+            [mutableResponse appendString:[self translatedCharacterForKeystroke:keystroke]];
+        }
     }
+
     if (isControl) {
         [mutableResponse appendString:@">"];
     }
